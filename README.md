@@ -1,0 +1,1 @@
+# SZAU-projekt-1

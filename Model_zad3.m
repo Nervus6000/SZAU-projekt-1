@@ -166,8 +166,6 @@ ylabel('F_D [cm^3/s]');
 
 saveChart(f1,outDir,'P3_porownanie_regulatorow');
 
-%% WYKRES POZIOMOW
-
 f2 = figure('Color','w', ...
     'Position',[100 100 1100 700]);
 
@@ -234,8 +232,6 @@ legend('MPC analityczny','MPC-SL numeryczny', ...
 
 saveChart(f3,outDir,'P3_porownanie_bledow');
 
-%% ZAPIS DANYCH
-
 wyniki = table( ...
     T, ...
     R_MPC.h(1,:)', ...
@@ -283,8 +279,6 @@ writetable(jakosc,fullfile(outDir, ...
 
 fprintf('\nZapisano wyniki w folderze:\n%s\n',outDir);
 
-%% FUNKCJE LOKALNE
-
 function R = runScenario(p,T,ref,d,controllerType,A0,B0,E0)
 
 N = length(T);
@@ -292,7 +286,6 @@ L = p.L;
 
 nx = 2+L+1;
 
-% Poziomy
 h = zeros(2,N);
 
 h(:,1) = [p.h10;p.h20];
@@ -307,8 +300,6 @@ queue = p.u0*ones(L,1);
 uPrev = p.u0;
 
 exitflag = ones(N-1,1);
-
-% Opcje optymalizacji
 opt = optimoptions('quadprog', ...
     'Display','off', ...
     'Algorithm','interior-point-convex');
@@ -322,8 +313,6 @@ lb = -p.dumax*ones(p.Nu,1);
 ub =  p.dumax*ones(p.Nu,1);
 
 x0 = [p.h10;p.h20];
-
-% Model analityczny jest staly
 fc0 = -A0*x0-B0*p.u0-E0*p.d0;
 
 [Ad0,Bd0,Ed0,cd0] = discretizeModel( ...
@@ -346,9 +335,6 @@ for k = 1:N-1
 
     uk = queue(1);
     dk = d(k);
-
-    %% AKTUALNA LINEARYZACJA
-
     if strcmp(controllerType,'SL')
 
         [Ac,Bc,Ec,fc] = localModel(hk,uk,dk,p);
@@ -382,8 +368,6 @@ for k = 1:N-1
         Az,Bz,Ez,cz,p.Np,p.Nu,z,dk);
 
     %% WARTOSC ZADANA W HORYZONCIE
-
-    % Regulator nie zna przyszlych zmian zadania
     target = ref(k)*ones(p.Np,1);
 
     %% FUNKCJA CELU

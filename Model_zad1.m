@@ -1,10 +1,9 @@
-%% SZAU - Zadanie 9 - Punkt 1
+
 % Model nieliniowy, linearyzacja, porownanie modeli, analityczny MPC,
-% test zbieznosci Eulera. Bez toolboxow sterowania i optymalizacji.
-% Wymuszenia od -75% do +100% (bez +125% i +150%).
+% Wymuszenia od -75% do +100% 
 clear; clc; close all;
 
-%% KONFIGURACJA
+% KONFIGURACJA
 outDir = fullfile(pwd,'Wyniki_Zadanie9_Punkt1');
 if ~exist(outDir,'dir'), mkdir(outDir); end
 p.C1=0.45; p.C2=0.75; p.a1=19; p.a2=18;
@@ -78,8 +77,8 @@ title('Wplyw amplitudy wymuszenia na blad linearyzacji');
 legend('Sterowanie F_{1in}','Zaklocenie F_D','Location','northwest');
 grid on;saveFigure(fig,fullfile(outDir,'Euler_RMSE_duze_zmiany'));
 
-%% B. ANALITYCZNY MPC - model predykcyjny ZOH, obiekt Euler 1 s
-% Parametry wyjsciowe - uczciwy punkt odniesienia, nie 'optymalne' bez strojenia
+%ANALITYCZNY MPC - model predykcyjny ZOH, obiekt Euler 1 s
+
 Ts=20; Np=100; Nu=15; lambda=0.5;
 uMin=0; uMax=150;
 assert(mod(p.tau,Ts)==0,'Opóznienie musi byc wielokrotnoscia Ts');
@@ -91,7 +90,6 @@ Ad=M(1:2,1:2); Bd=M(1:2,3); Ed=M(1:2,4);
 
 % Stan rozszerzony z kolejka opoznienia i poprzednim sterowaniem:
 % z=[delta_h1;delta_h2;u(k-L)-u0;...;u(k-1)-u0;u(k-1)-u0]
-% Sterowanie decyzyjne: Delta u(k)=u(k)-u(k-1).
 nz=2+L+1;
 Aa=zeros(nz); Ba=zeros(nz,1); Ea=zeros(nz,1); Ca=zeros(1,nz);
 Aa(1:2,1:2)=Ad; Aa(1:2,3)=Bd;
@@ -182,7 +180,7 @@ stairs(tM,dM,'Color',[0.85 0.33 0.1],'LineWidth',1.5);
 ylabel('F_D [cm^3/s]');xlabel('Czas [s]');grid on;
 saveFigure(fig,fullfile(outDir,'Euler_MPC_regulacja'));
 
-%% C. TEST ZBIEZNOSCI EULERA: -75%, +50%, +100%
+%% TEST ZBIEZNOSCI EULERA: -75%, +50%, +100%
 testChanges=[-75 50 100];
 testSteps=[1 0.5 0.25];
 convRes=zeros(numel(testChanges),11);
@@ -242,7 +240,7 @@ fprintf('Wyniki: %s\n',outDir);
 fprintf('Wykresy: 10 PNG i 10 FIG; tabele CSV.\n');
 fprintf('Zakres zmian [%%]: ');fprintf('%g ',changes);fprintf('\n');
 
-%% FUNKCJE LOKALNE
+%FUNKCJE LOKALNE
 function dh=tankRHS(h,u,d,p)
     if any(h<=0), error('Poziomy h1 i h2 musza byc dodatnie'); end
     dh=[(u+d-p.a1*sqrt(h(1)))/(3*p.C1*h(1)^2); ...
